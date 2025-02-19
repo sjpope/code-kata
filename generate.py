@@ -20,7 +20,6 @@ def generate(spec, outfile = "fixed.txt", n=5):
                 header += name.ljust(offset)[:offset]
             data.write(header + "\n")
         
-
         for _ in range(n):
             line = "".join(generate_string(offset) for offset in offsets)
             data.write(line + "\n")
@@ -31,23 +30,18 @@ def parse(spec, source="fixed.txt", destination="parsed.csv"):
     names = spec["ColumnNames"]
     offsets = list(map(int, spec["Offsets"]))
     
+    boundaries = []
+    start = 0
+    for offset in offsets:
+        boundaries.append((start, start + offset))
+        start += offset
+    
     # Parse fixed width to generate delimited file
-    with open(source, "r") as infile, open(destination, "w", encoding=spec["DelimitedEncoding"]) as outfile:
-        
+    with open(source, "r", encoding=spec["FixedWidthEncoding"]) as infile, open(destination, "w", encoding=spec["DelimitedEncoding"]) as outfile:
         writer = csv.DictWriter(outfile, names)
-        
         for line in infile:
-            i = 0
-            row = {}
-            
-            for name, offset in zip(names, offsets):
-                row[name] = line[i:i+offset].rstrip()
-                i += offset
-            
-            # map folumn nam,es to values for row
-            
-            writer.writerow(row)
-        
+                row = {name: line[start:end].rstrip() for name, (start, end) in zip(names, boundaries)}
+                writer.writerow(row)
              
     print(f'-- Prob 1 Complete: {destination} generated successfully --\n\n')
         
