@@ -9,12 +9,10 @@ def generate_string(offset):
     return rand_str.ljust(offset)[:offset]
 
 def generate(spec, outfile = "fixed.txt", n=5):
-    
     names = spec["ColumnNames"]
     offsets = list(map(int, spec["Offsets"]))
     
     with open(outfile, "w", encoding=spec["FixedWidthEncoding"]) as data:
-
         # Evaluate Header
         if spec["IncludeHeader"].lower() == "true":
             header = ""
@@ -35,7 +33,6 @@ def generate(spec, outfile = "fixed.txt", n=5):
     print(f"\n-- Prob 1 File Generation Complete. --\n\n")
 
 def parse(spec, source="fixed.txt", destination="parsed.csv"):
-    
     names = spec["ColumnNames"]
     offsets = list(map(int, spec["Offsets"]))
     
@@ -64,13 +61,17 @@ def read(filename, encoding_type):
         print(f.read())
 
 if __name__ == "__main__":
+    try:
+        with open("spec.json", "r") as file:
+            spec = json.load(file)
     
-    with open("spec.json", "r") as file:
-        spec = json.load(file)
-    
-    generate(spec, "fixed.txt")
-    read("fixed.txt", encoding_type=spec["FixedWidthEncoding"])
+        generate(spec, "fixed.txt")
+        read("fixed.txt", encoding_type=spec["FixedWidthEncoding"])
         
-    parse(spec, "fixed.txt" , "parsed.csv")
-    read("parsed.csv", encoding_type=spec["DelimitedEncoding"])
+        parse(spec, "fixed.txt" , "parsed.csv")
+        read("parsed.csv", encoding_type=spec["DelimitedEncoding"])
+        
+    except Exception as e:
+        print(f"Something went wrong: {e}")
+        exit(1)
     
