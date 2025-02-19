@@ -49,7 +49,7 @@ def parse(spec):
             row = {}
             
             for name, offset in zip(names, offsets):
-                row[name] = line[i:offset].rstrip()
+                row[name] = line[i:i+offset].rstrip()
                 i += offset
             
             # map folumn nam,es to values for row
