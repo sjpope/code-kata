@@ -21,13 +21,8 @@ def generate(spec, outfile = "fixed.txt", n=5):
             data.write(header + "\n")
         
 
-        for rec in range(1, n + 1):
-            line = ""
-            
-            for offset in offsets:
-                value = generate_string(offset)
-                line += value
-                
+        for _ in range(n):
+            line = "".join(generate_string(offset) for offset in offsets)
             data.write(line + "\n")
     
     print(f"\n-- Prob 1 File Generation Complete. --\n\n")
