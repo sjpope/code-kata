@@ -8,7 +8,7 @@ def generate_string(offset):
     rand_str = ''.join(random.choices(string.ascii_letters + string.digits, k=length))
     return rand_str.ljust(offset)[:offset]
 
-def generate(spec, outfile = "fixed.txt", n=15):
+def generate(spec, outfile = "fixed.txt", n=5):
     
     names = spec["ColumnNames"]
     offsets = list(map(int, spec["Offsets"]))
@@ -32,15 +32,15 @@ def generate(spec, outfile = "fixed.txt", n=15):
                 
             data.write(line + "\n")
     
-    print(f"Prob 1 File Generation Complete")
+    print(f"\n-- Prob 1 File Generation Complete. --\n\n")
 
-def parse(spec):
+def parse(spec, source="fixed.txt", destination="parsed.csv"):
     
     names = spec["ColumnNames"]
     offsets = list(map(int, spec["Offsets"]))
     
     # Parse fixed width to generate delimited file
-    with open("fixed.txt", "r") as infile, open("parsed.csv", "w", encoding=spec["DelimitedEncoding"]) as outfile:
+    with open(source, "r") as infile, open(destination, "w", encoding=spec["DelimitedEncoding"]) as outfile:
         
         writer = csv.DictWriter(outfile, names)
         
@@ -57,15 +57,20 @@ def parse(spec):
             writer.writerow(row)
         
              
-    print('Prob 1 Complete: parsed.csv generated successfully')
+    print(f'-- Prob 1 Complete: {destination} generated successfully --\n\n')
         
-        
-
+def read(filename, encoding_type):
+    with open(filename, "r", encoding=encoding_type) as f:
+        print(f.read())
 
 if __name__ == "__main__":
     
     with open("spec.json", "r") as file:
         spec = json.load(file)
     
-    generate(spec)
-    parse(spec)
+    generate(spec, "fixed.txt")
+    read("fixed.txt", encoding_type=spec["FixedWidthEncoding"])
+        
+    parse(spec, "fixed.txt" , "parsed.csv")
+    read("parsed.csv", encoding_type=spec["DelimitedEncoding"])
+    
